@@ -29,6 +29,8 @@
         <column name="condition_name"       xsi:type="varchar"  nullable="false" length="20"                               comment="Rate Condition name" />
         <column name="condition_from_value" xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Rate condition from value" />
         <column name="condition_to_value"   xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Rate condition to value" />
+        <column name="condition_from_weight" xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Rate condition from weight" />
+        <column name="condition_to_weight"   xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Rate condition to weight" />
         <column name="price"                xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Price" />
         <column name="cost"                 xsi:type="decimal"  nullable="false" scale="4" precision="12" default="0.0000" comment="Cost" />
         <column name="shipping_method"      xsi:type="varchar"  nullable="false" length="255"                              comment="Shipping Method" />
@@ -42,6 +44,8 @@
             <column name="condition_name" />
             <column name="condition_from_value" />
             <column name="condition_to_value" />
+            <column name="condition_from_weight" />
+            <column name="condition_to_weight" />
             <column name="shipping_method" />
         </constraint>
     </table>

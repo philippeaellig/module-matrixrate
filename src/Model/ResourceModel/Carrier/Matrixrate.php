@@ -218,7 +218,7 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )->where(
                 'website_id = :website_id'
             )->order(
-                ['dest_country_id DESC', 'dest_region_id DESC', 'dest_zip DESC', 'condition_from_value DESC']
+                ['dest_country_id DESC', 'dest_region_id DESC', 'dest_zip DESC', 'condition_from_value DESC', 'condition_from_weight DESC']
             );
 
             $zoneWhere='';
@@ -294,12 +294,21 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if ($condition == null || $condition == "") {
                 $condition = 0;
             }
+            $conditionWeight = $request->getData($request->getConditionMRName());
+
+            if ($condition == null || $condition == "") {
+                $condition = 0;
+            }
 
             $bind[':condition_value'] = $condition;
+            $bind[':condition_weight'] = $conditionWeight;
 
             $select->where('condition_name = :condition_name');
+
             $select->where('condition_from_value < :condition_value');
             $select->where('condition_to_value >= :condition_value');
+            $select->where('condition_from_weight < :condition_weight');
+            $select->where('condition_to_weight >= :condition_weight');
 
             $this->logger->debug('SQL Select: ', $select->getPart('where'));
             $this->logger->debug('Bindings: ', $bind);
@@ -576,35 +585,61 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return false;
         }
 
+        // validate condition from value
+        // MNB-472 Thanks to https://github.com/JeroenVanLeusden for the enhancement to accept -1
+        $weightFrom = $row[7] == '*' || $row[7] == -1 ? -1 : $this->_parseDecimalValue($row[7]);
+        if ($weightFrom === false) {
+            $this->importErrors[] = __(
+                'Please correct %1 From "%2" in Row #%3.',
+                'weight',
+                $row[7],
+                $rowNumber
+            );
+            return false;
+        }
+        // validate conditionto to value
+        $weightTo = $row[8] == '*' ? 10000000 : $this->_parseDecimalValue($row[8]);
+        if ($weightTo === false) {
+            $this->importErrors[] = __(
+                'Please correct %1 To "%2" in Row #%3.',
+                'weight',
+                $row[8],
+                $rowNumber
+            );
+            return false;
+        }
+
         // validate price
-        $price = $this->_parseDecimalValue($row[7]);
+        $price = $this->_parseDecimalValue($row[9]);
         if ($price === false) {
-            $this->importErrors[] = __('Please correct Shipping Price "%1" in Row #%2.', $row[7], $rowNumber);
+            $this->importErrors[] = __('Please correct Shipping Price "%1" in Row #%2.', $row[9], $rowNumber);
             return false;
         }
 
         // validate shipping method
-        if ($row[8] == '*' || $row[8] == '') {
-            $this->importErrors[] = __('Please correct Shipping Method "%1" in Row #%2.', $row[8], $rowNumber);
+        if ($row[10] == '*' || $row[10] == '') {
+            $this->importErrors[] = __('Please correct Shipping Method "%1" in Row #%2.', $row[10], $rowNumber);
             return false;
         } else {
-            $shippingMethod = $row[8];
+            $shippingMethod = $row[10];
         }
 
         // protect from duplicate
         $hash = sprintf(
-            "%s-%s-%s-%s-%F-%F-%s",
+            "%s-%s-%s-%s-%F-%F-%F-%F-%s",
             $countryId,
             $city,
             $regionId,
             $zipCode,
             $valueFrom,
             $valueTo,
+            $weightFrom,
+            $weightTo,
             $shippingMethod
         );
         if (isset($this->importUniqueHash[$hash])) {
             $this->importErrors[] = __(
-                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", and Shipping Method "%9")',
+                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", From Weight "%8", To Weight "%9", and Shipping Method "%10")',
                 $rowNumber,
                 $row[0],
                 $row[1],
@@ -613,6 +648,8 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $zip_to,
                 $valueFrom,
                 $valueTo,
+                $weightFrom,
+                $weightTo,
                 $shippingMethod
             );
             return false;
@@ -629,6 +666,8 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->importConditionName,// condition_name,
             $valueFrom,                 // condition_value From
             $valueTo,                   // condition_value To
+            $weightFrom,                 // condition_weight From
+            $weightTo,                   // condition_weight To
             $price,                     // price
             $shippingMethod
         ];
@@ -655,6 +694,8 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 'condition_name',
                 'condition_from_value',
                 'condition_to_value',
+                'condition_from_weight',
+                'condition_to_weight',
                 'price',
                 'shipping_method',
             ];

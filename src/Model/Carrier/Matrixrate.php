@@ -268,11 +268,13 @@ class Matrixrate extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
         return [
             'condition_name' => [
                 'package_weight' => __('Weight vs. Destination'),
+                'package_value_weight' => __('Weight and Order Subtotal vs. Destination'),
                 'package_value' => __('Order Subtotal vs. Destination'),
                 'package_qty' => __('# of Items vs. Destination')
             ],
             'condition_name_short' => [
                 'package_weight' => __('Weight'),
+                'package_value_weight' => __('Weight and Order Subtotal'),
                 'package_value' => __('Order Subtotal'),
                 'package_qty' => __('# of Items')
             ]

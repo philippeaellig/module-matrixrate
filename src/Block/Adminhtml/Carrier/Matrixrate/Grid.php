@@ -163,43 +163,58 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->addColumn(
             'dest_country',
             ['header' => __('Country'), 'index' => 'dest_country', 'default' => '*']
-        );
+        ); // 0
 
         $this->addColumn(
             'dest_region',
             ['header' => __('Region/State'), 'index' => 'dest_region', 'default' => '*']
-        );
+        ); // 1
+
         $this->addColumn(
             'dest_city',
             ['header' => __('City'), 'index' => 'dest_city', 'default' => '*']
-        );
+        ); // 2
+
         $this->addColumn(
             'dest_zip',
             ['header' => __('Zip/Postal Code From'), 'index' => 'dest_zip', 'default' => '*']
-        );
+        ); // 3
+
         $this->addColumn(
             'dest_zip_to',
             ['header' => __('Zip/Postal Code To'), 'index' => 'dest_zip_to', 'default' => '*']
-        );
+        ); // 4
 
         $label = $this->matrixrate->getCode('condition_name_short', $this->getConditionName());
 
         $this->addColumn(
             'condition_from_value',
-            ['header' => $label.__('>'), 'index' => 'condition_from_value']
-        );
+            ['header' => __('value >'), 'index' => 'condition_from_value']
+        ); // 5
 
         $this->addColumn(
             'condition_to_value',
-            ['header' => $label.__('<='), 'index' => 'condition_to_value']
-        );
+            ['header' => __('value <='), 'index' => 'condition_to_value']
+        ); // 6
+
+        $this->addColumn(
+            'condition_from_weight',
+            ['header' => __('weight >'), 'index' => 'condition_from_weight']
+        ); // 7
+
+        $this->addColumn(
+            'condition_to_weight',
+            ['header' => __('weight <='), 'index' => 'condition_to_weight']
+        ); // 8
 
         $this->addColumn('price', ['header' => __('Shipping Price'), 'index' => 'price']);
+        // 9
 
         $this->addColumn(
             'shipping_method',
             ['header' => __('Shipping Method'), 'index' => 'shipping_method']
         );
+        // 10
 
         return parent::_prepareColumns();
     }
