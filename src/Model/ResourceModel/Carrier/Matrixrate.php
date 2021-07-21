@@ -643,7 +643,7 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
         if (isset($this->importUniqueHash[$hash])) {
             $this->importErrors[] = __(
-                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", From Weight "%8", To Weight "%9", and Shipping Method "%10")',
+                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", From Weight "%9", To Weight "%10", and Shipping Method "%11")',
                 $rowNumber,
                 $row[0],
                 $row[1],
