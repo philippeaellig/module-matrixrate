@@ -294,10 +294,9 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if ($condition == null || $condition == "") {
                 $condition = 0;
             }
-            $conditionWeight = $request->getData($request->getConditionMRName());
-
-            if ($condition == null || $condition == "") {
-                $condition = 0;
+            $conditionWeight = $request->getPackageWeight();
+            if ($conditionWeight == null || $conditionWeight == "") {
+                $conditionWeight = 0;
             }
 
             $bind[':condition_value'] = $condition;
