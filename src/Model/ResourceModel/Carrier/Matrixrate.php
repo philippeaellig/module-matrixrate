@@ -305,10 +305,15 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
             $select->where('condition_name = :condition_name');
 
-            $select->where('condition_from_value < :condition_value');
-            $select->where('condition_to_value >= :condition_value');
-            $select->where('condition_from_weight < :condition_weight');
-            $select->where('condition_to_weight >= :condition_weight');
+            if (in_array($request->getConditionMRName(), ['package_value', 'package_qty', 'package_value_weight'])) {
+                $select->where('condition_from_value < :condition_value');
+                $select->where('condition_to_value >= :condition_value');
+            }
+
+            if (in_array($request->getConditionMRName(), ['package_weight', 'package_value_weight'])) {
+                $select->where('condition_from_weight < :condition_weight');
+                $select->where('condition_to_weight >= :condition_weight');
+            }
 
             $this->logger->debug('SQL Select: ', $select->getPart('where'));
             $this->logger->debug('Bindings: ', $bind);
