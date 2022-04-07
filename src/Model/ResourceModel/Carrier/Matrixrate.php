@@ -289,7 +289,12 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $bind[':condition_name'] = $request->getConditionMRName();
 
             //SHQ18-1978
-            $condition = $request->getData($request->getConditionMRName());
+            if ($request->getConditionMRName() === 'package_value_weight') {
+                $condition = $request->getData('package_value');
+            }
+            else {
+                $condition = $request->getData($request->getConditionMRName());
+            }
 
             if ($condition == null || $condition == "") {
                 $condition = 0;
