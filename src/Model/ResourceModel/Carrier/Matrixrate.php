@@ -299,10 +299,9 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if ($condition == null || $condition == "") {
                 $condition = 0;
             }
-            $conditionWeight = $request->getData($request->getConditionMRName());
-
-            if ($condition == null || $condition == "") {
-                $condition = 0;
+            $conditionWeight = $request->getPackageWeight();
+            if ($conditionWeight == null || $conditionWeight == "") {
+                $conditionWeight = 0;
             }
 
             $bind[':condition_value'] = $condition;
@@ -310,10 +309,15 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
             $select->where('condition_name = :condition_name');
 
-            $select->where('condition_from_value < :condition_value');
-            $select->where('condition_to_value >= :condition_value');
-            $select->where('condition_from_weight < :condition_weight');
-            $select->where('condition_to_weight >= :condition_weight');
+            if (in_array($request->getConditionMRName(), ['package_value', 'package_qty', 'package_value_weight'])) {
+                $select->where('condition_from_value < :condition_value');
+                $select->where('condition_to_value >= :condition_value');
+            }
+
+            if (in_array($request->getConditionMRName(), ['package_weight', 'package_value_weight'])) {
+                $select->where('condition_from_weight < :condition_weight');
+                $select->where('condition_to_weight >= :condition_weight');
+            }
 
             $this->logger->debug('SQL Select: ', $select->getPart('where'));
             $this->logger->debug('Bindings: ', $bind);
@@ -644,7 +648,7 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
         if (isset($this->importUniqueHash[$hash])) {
             $this->importErrors[] = __(
-                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", From Weight "%8", To Weight "%9", and Shipping Method "%10")',
+                'Duplicate Row #%1 (Country "%2", Region/State "%3", City "%4", Zip from "%5", Zip to "%6", From Value "%7", To Value "%8", From Weight "%9", To Weight "%10", and Shipping Method "%11")',
                 $rowNumber,
                 $row[0],
                 $row[1],

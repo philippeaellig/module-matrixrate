@@ -13,6 +13,9 @@
         },
         {
             "name": "Karen Baker"
+        },
+        {
+            "name": "Philippe Aellig"
         }
     ],
     "type": "magento2-module",
